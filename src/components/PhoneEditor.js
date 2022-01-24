@@ -3,13 +3,14 @@ import { nanoid } from "nanoid";
 import PropTypes from "prop-types";;
 
 class PhoneEditor extends Component {
+    static propTypes = {
+        contacts: PropTypes.array.isRequired,
+        onSubmit: PropTypes.func.isRequired,
+    };
+
     state = {
         name: '',
         number: ''
-    }
-
-    static propTypes = {
-        onSubmit: PropTypes.func.isRequired,
     }
 
     nameInputId = nanoid();
@@ -20,9 +21,20 @@ class PhoneEditor extends Component {
         this.setState({ [name]: value });
     };
 
+    findContactName = contactName => {
+        return this.props.contacts.some(({ name }) => name === contactName)
+    };
+
     handleSubmit = e => {
         e.preventDefault();
-        this.props.onSubmit(this.state)
+        const { name } = this.state;
+
+        if (this.findContactName(name)) {
+            alert(`${name} is already in contacts!`);
+            return;
+        }
+
+        this.props.onSubmit(this.state);
         this.reset();
     };
 
